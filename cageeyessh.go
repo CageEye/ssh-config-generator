@@ -13,7 +13,8 @@ import (
 type Cage struct {
 	IP     string `json:"ip"`
 	Labels struct {
-		Cage string `json:"cage"`
+		Cage                 string `json:"cage"`
+    CageProcessingUnitId string `json:"cage_processing_unit_id"`
 	} `json:"labels"`
 }
 
@@ -89,7 +90,14 @@ func generateConfigFile(outputDir string, farm Farm) {
 		file.WriteString(fmt.Sprintf("    ProxyJump %s\n\n", farmAlias))
 
 		for _, cage := range farm.Cages {
-			cageAlias := fmt.Sprintf("%s-cage-%s", farmAlias, strings.ToLower(cage.Labels.Cage))
+      var cageAlias string
+      if cage.Labels.Cage == "" {
+        macParts := strings.Split(cage.Labels.CageProcessingUnitId, ":")
+        cageID := strings.Join(macParts[len(macParts)-3:], "-")
+        cageAlias = fmt.Sprintf("%s-cage-%s", farmAlias, strings.ToLower(cageID))
+      } else {
+  			cageAlias = fmt.Sprintf("%s-cage-%s", farmAlias, strings.ToLower(cage.Labels.Cage))
+      }
 			file.WriteString(fmt.Sprintf("Host %s\n", cageAlias))
 			file.WriteString(fmt.Sprintf("    HostName %s\n\n", cage.IP))
 		}
