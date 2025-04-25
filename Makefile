@@ -13,6 +13,7 @@ include:
 
 install: include deploy
 	@cp prod.config ~/.ssh/prod.config
+	@cp staging.config ~/.ssh/staging.config
 
 check_go:
 	@if [ -z "$$(command -v go)" ]; then \
